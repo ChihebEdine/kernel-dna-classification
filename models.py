@@ -202,8 +202,7 @@ class KernelSVM:
         lb =  (bound*y-bound)/2
         ub =  (bound*y+bound)/2
         
-        solution = solve_qp(P=K, q=-y, lb=lb, ub=ub, solver='quadprog')
-        self.Alpha = solution.reshape((n,1))
+        self.Alpha = solve_qp(P=K, q=-y, lb=lb, ub=ub, solver='quadprog')
 
     def predict(self, X):
         """
