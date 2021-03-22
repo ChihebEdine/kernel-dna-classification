@@ -1,13 +1,12 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from kernels import linear_kernel, gaussian_kernel
-from models import KernelRidgeRegression, KernelLogisticRegression, KernelSVM
+from kernels import gaussian_kernel
+from models import KernelLogisticRegression, KernelSVM
 from utils import accuracy
 
 
 def train_and_predict(model, threshold, dataset=0):
-    #X_seq = pd.read_csv(f"data/train/Xtr{dataset}.csv")
     X = np.genfromtxt(f"data/train/Xtr{dataset}_mat100.csv", delimiter=' ')
     y = pd.read_csv(f"data/train/Ytr{dataset}.csv")["Bound"].values
     y = 2*y - 1
