@@ -4,7 +4,7 @@ from tqdm import tqdm
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from models import KernelRidgeRegression, KernelLogisticRegression, KernelSVM
-from kernels import linear_kernel, gaussian_kernel
+from kernels import linear_kernel, gaussian_kernel, k_substrings_embedding
 
 
 def accuracy(y_test, y_pred):
@@ -29,8 +29,10 @@ def best_threshold(model, X_test, y_test, lb=-0.5, ub=0.5, precision=20, plot=Tr
 
 if __name__ == "__main__":
     i = 2
+    k = 10
 
     #X_seq = pd.read_csv(f"data/train/Xtr{i}.csv")
+    #X = X_seq["seq"].map(lambda s : k_substrings_embedding(s, k=k)).values
     X = np.genfromtxt(f"data/train/Xtr{i}_mat100.csv", delimiter=' ')
     y = pd.read_csv(f"data/train/Ytr{i}.csv")["Bound"].values
     y = 2*y - 1
