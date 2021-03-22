@@ -1,4 +1,5 @@
 import numpy as np
+from qpsolvers import solve_qp
 
 
 class KernelRidgeRegression:
@@ -30,7 +31,7 @@ class KernelRidgeRegression:
             X : np.array. shape (n_samples, dim)
                 training features
                 
-            y : np.array. shape (n_samples, 1)
+            y : np.array. shape (n_samples,)
                 training targets
         """
         self.Data = X
@@ -48,7 +49,7 @@ class KernelRidgeRegression:
                 
         Returns
         -------
-            y : np.array. shape (n_samples, 1)
+            y : np.array. shape (n_samples,)
                 prediction
         """
         K = self.Kernel(X, self.Data)
@@ -91,7 +92,6 @@ class KernelLogisticRegression:
         self.Data = None
         
     def loss(self, s):
-        s = s.reshape(-1)
         l1 = -1/(1 + np.exp(s))
         l2 = np.exp(s)/(1 + np.exp(s))**2
         return np.diag(l1), np.diag(l2)
@@ -103,7 +103,7 @@ class KernelLogisticRegression:
             X : np.array. shape (n_samples, dim)
                 training features
                 
-            y : np.array (int). shape (n_samples, 1)
+            y : np.array (int). shape (n_samples,)
                 training labels in {-1, 1}
         """
         self.Data = X
@@ -111,7 +111,7 @@ class KernelLogisticRegression:
         n = K.shape[0]
         I = np.eye(n)
         
-        alpha_old = np.zeros((n, 1))
+        alpha_old = np.zeros(n)
         
         for step in range(self.max_iter):
             m = K @ alpha_old
@@ -147,4 +147,77 @@ class KernelLogisticRegression:
         f = K @ self.Alpha
         p = 1/(1+np.exp(-f))
         y = (p>self.threshold).astype(int)
+        return 2*y - 1
+
+
+class KernelSVM:
+    def __init__(self, kernel_func, Lambda=0.1, threshold=0.0, reg=1e-10):
+        """
+        Parameters
+        ----------
+            kernel_func : lambda function
+                a kernel function, takes two sets of vectors X_1 (n_1, m) and  X_2 (n_2, m)
+                and returns the gram matrix K(X_1, X_2) (n_1, n_2)
+
+            Lambda : float
+                regularization parameter
+
+            threshold : float
+                probability threshold to predict 1
+
+            reg : float << 1
+                small number to add to the diagonal of K
+                to ensure that it is positive definite
+        """
+        self.Kernel = kernel_func
+        self.Alpha = None
+        self.Data = None
+        self.Lambda = Lambda
+        self.threshold = threshold
+        self.reg = reg
+        print("Kernel Support Vector Machines")
+    
+    def reset(self):
+        self.Alpha = None
+        self.Data = None
+        
+    def train(self, X, y):
+        """
+        Parameters
+        ----------
+            X : np.array. shape (n_samples, dim)
+                training features
+                
+            y : np.array (int). shape (n_samples,)
+                training labels in {-1, 1}
+        """
+        self.Data = X
+        K = self.Kernel(X,X)
+        n = K.shape[0]
+        I = np.eye(n)
+        K += self.reg*I
+        
+        bound = 1/(2*self.Lambda*n)
+        y = y.astype(float)
+        lb =  (bound*y-bound)/2
+        ub =  (bound*y+bound)/2
+        
+        solution = solve_qp(P=K, q=-y, lb=lb, ub=ub, solver='quadprog')
+        self.Alpha = solution.reshape((n,1))
+
+    def predict(self, X):
+        """
+        Parameters
+        ----------
+            X : np.array. shape (n_samples, dim)
+                features
+                
+        Returns
+        -------
+            y : np.array (int). shape (n_samples,)
+                predicted labels in {-1, 1}
+        """
+        K = self.Kernel(X, self.Data)
+        f = K @ self.Alpha
+        y = (f>self.threshold).astype(int)
         return 2*y - 1
