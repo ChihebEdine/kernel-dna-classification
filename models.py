@@ -58,7 +58,7 @@ class KernelRidgeRegression:
 
 
 class KernelLogisticRegression:
-    def __init__(self, kernel_func, Lambda=0.1, tol=1e-5, max_iter=100000, threshold=0.5):
+    def __init__(self, kernel_func, Lambda=0.1, tol=1e-5, max_iter=100000):
         """
         Parameters
         ----------
@@ -74,9 +74,6 @@ class KernelLogisticRegression:
                 
             max_iter : int
                 maximum number of iterations allowed to converge
-                
-            threshold : float in [0, 1]
-                probability threshold to predict 1
         """
         self.Kernel = kernel_func
         self.Alpha = None
@@ -84,7 +81,6 @@ class KernelLogisticRegression:
         self.Lambda = Lambda
         self.tol = tol
         self.max_iter = max_iter
-        self.threshold = threshold
         print("Kernel Logistic Regression")
     
     def reset(self):
@@ -131,12 +127,15 @@ class KernelLogisticRegression:
     
         self.Alpha = alpha_new
 
-    def predict(self, X):
+    def predict(self, X, threshold=0.5):
         """
         Parameters
         ----------
             X : np.array. shape (n_samples, dim)
                 features
+            
+            threshold : float in [0, 1]
+                probability threshold to predict 1
                 
         Returns
         -------
@@ -146,12 +145,12 @@ class KernelLogisticRegression:
         K = self.Kernel(X, self.Data)
         f = K @ self.Alpha
         p = 1/(1+np.exp(-f))
-        y = (p>self.threshold).astype(int)
-        return 2*y - 1
+        y = (p>threshold).astype(int)
+        return 2*y - 1, p
 
 
 class KernelSVM:
-    def __init__(self, kernel_func, Lambda=0.1, threshold=0.0, reg=1e-10):
+    def __init__(self, kernel_func, Lambda=0.1, reg=1e-10):
         """
         Parameters
         ----------
@@ -162,9 +161,6 @@ class KernelSVM:
             Lambda : float
                 regularization parameter
 
-            threshold : float
-                probability threshold to predict 1
-
             reg : float << 1
                 small number to add to the diagonal of K
                 to ensure that it is positive definite
@@ -173,7 +169,6 @@ class KernelSVM:
         self.Alpha = None
         self.Data = None
         self.Lambda = Lambda
-        self.threshold = threshold
         self.reg = reg
         print("Kernel Support Vector Machines")
     
@@ -204,12 +199,15 @@ class KernelSVM:
         
         self.Alpha = solve_qp(P=K, q=-y, lb=lb, ub=ub, solver='quadprog')
 
-    def predict(self, X):
+    def predict(self, X, threshold=0.0):
         """
         Parameters
         ----------
             X : np.array. shape (n_samples, dim)
                 features
+            
+            threshold : float
+                probability threshold to predict 1
                 
         Returns
         -------
@@ -218,5 +216,5 @@ class KernelSVM:
         """
         K = self.Kernel(X, self.Data)
         f = K @ self.Alpha
-        y = (f>self.threshold).astype(int)
-        return 2*y - 1
+        y = (f>threshold).astype(int)
+        return 2*y - 1, f
