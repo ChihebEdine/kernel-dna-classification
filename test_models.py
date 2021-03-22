@@ -45,7 +45,7 @@ def test_KernelLogisticRegression(k="gaussian"):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
     
     KLR.train(X_train, y_train)
-    y_pred = KLR.predict(X_test)
+    y_pred, _ = KLR.predict(X_test)
     plt.scatter(X_test, y_test, label="ground truth")
     plt.scatter(X_test, y_pred, label="prediction")
     plt.title(f"Kernel Logistic Regression ({k})")
@@ -62,7 +62,7 @@ def test_KernelSVM(k="gaussian"):
         return
     
     X = np.random.uniform(low=-1.0, high=1.0, size=(100,2))
-    y = 2*(X[:,0]>0).astype(int) - 1
+    y = 2*(X[:,0]**2 + X[:,1]**2<0.5).astype(int) - 1
     color = ["blue"  if i==1 else "red" for i in y ]
     plt.scatter(X[:,0], X[:,1], c=color)
     plt.title(f"Ground truth coloring")
@@ -71,11 +71,10 @@ def test_KernelSVM(k="gaussian"):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
     SVM.train(X_train, y_train)
 
-    y_pred = SVM.predict(X_test)
+    y_pred, _ = SVM.predict(X_test)
     c = ["blue"  if i==1 else "red" for i in y_pred ]
     plt.scatter(X_test[:,0], X_test[:,1], c=c)
     plt.title(f"Kernel Support Vector Machines ({k})")
-    plt.legend()
     plt.show()
 
 
