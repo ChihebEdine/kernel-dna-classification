@@ -30,8 +30,14 @@ data
     │   Xte2.csv
     └─
 ```
+## 2. Install Requirements
+Run the following command to install the necessary python packages
 
-## 2. Reproduce the submission file
+```bash
+pip install -r requirements.txt
+```
+
+## 3. Reproduce the submission file
 To reporduce the submission file you can run the script in `start.py` 
 ```bash
 python start.py
