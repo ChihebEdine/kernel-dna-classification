@@ -18,7 +18,12 @@ class KernelRidgeRegression:
         self.Alpha = None
         self.Data = None
         self.Lambda = Lambda
-        print("Kernel Ridge Regression")
+
+    def __str__(self):
+        if self.Data is None:
+            return "Kernel Ridge Regression"
+        else:
+            return f"Kernel Ridge Regression [trained on {len(self.Data)} examples]"
     
     def reset(self):
         self.Alpha = None
@@ -81,7 +86,12 @@ class KernelLogisticRegression:
         self.Lambda = Lambda
         self.tol = tol
         self.max_iter = max_iter
-        print("Kernel Logistic Regression")
+
+    def __str__(self):
+        if self.Data is None:
+            return "Kernel Logistic Regression"
+        else:
+            return f"Kernel Logistic Regression [trained on {len(self.Data)} examples]"
     
     def reset(self):
         self.Alpha = None
@@ -170,7 +180,12 @@ class KernelSVM:
         self.Data = None
         self.Lambda = Lambda
         self.reg = reg
-        print("Kernel Support Vector Machines")
+
+    def __str__(self):
+        if self.Data is None:
+            return "Kernel Support Vector Machines"
+        else:
+            return f"Kernel Support Vector Machines [trained on {len(self.Data)} examples]"
     
     def reset(self):
         self.Alpha = None
