@@ -45,9 +45,10 @@ def test_KernelLogisticRegression(k="gaussian"):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
     
     KLR.train(X_train, y_train)
-    y_pred, _ = KLR.predict(X_test)
+    y_pred, p = KLR.predict(X_test)
     plt.scatter(X_test, y_test, label="ground truth")
-    plt.scatter(X_test, y_pred, label="prediction")
+    plt.scatter(X_test, y_pred, label="prediction", marker='.')
+    plt.scatter(X_test, p, label="probabilies P(1|X)", marker='.')
     plt.title(f"Kernel Logistic Regression ({k})")
     plt.legend()
     plt.show()
@@ -63,18 +64,25 @@ def test_KernelSVM(k="gaussian"):
     
     X = np.random.uniform(low=-1.0, high=1.0, size=(100,2))
     y = 2*(X[:,0]**2 + X[:,1]**2<0.5).astype(int) - 1
-    color = ["blue"  if i==1 else "red" for i in y ]
-    plt.scatter(X[:,0], X[:,1], c=color)
-    plt.title(f"Ground truth coloring")
-    plt.show()
+
+    fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(8, 3), constrained_layout=True)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
     SVM.train(X_train, y_train)
 
+    color = ["blue"  if i==1 else "red" for i in y_test]
+    ax1.scatter(X_test[:,0], X_test[:,1], c=color)
+    ax1.set_title(f"Ground truth coloring")
+    ax1.set_xlim([-1.1, 1.1])
+    ax1.set_ylim([-1.1, 1.1])
+
     y_pred, _ = SVM.predict(X_test)
     c = ["blue"  if i==1 else "red" for i in y_pred ]
-    plt.scatter(X_test[:,0], X_test[:,1], c=c)
-    plt.title(f"Kernel Support Vector Machines ({k})")
+    ax2.scatter(X_test[:,0], X_test[:,1], c=c)
+    ax2.set_title(f"Kernel Support Vector Machines\n({k})")
+    ax2.set_xlim([-1.1, 1.1])
+    ax2.set_ylim([-1.1, 1.1])
+
     plt.show()
 
 
