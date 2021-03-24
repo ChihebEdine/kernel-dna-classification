@@ -44,9 +44,15 @@ if __name__ == "__main__":
     threshold2 = 0.14
     k2 = 9
 
+    print("Training on the first data set ...")
     X_seq_te0 = train_and_predict(model=model0, threshold=threshold0, k=k0, dataset=0)
+
+    print("Training on the second data set ...")
     X_seq_te1 = train_and_predict(model=model1, threshold=threshold1, k=k1, dataset=1)
+
+    print("Training on the third data set ...")
     X_seq_te2 = train_and_predict(model=model2, threshold=threshold2, k=k2, dataset=2)
 
     FINAL = pd.concat([X_seq_te0, X_seq_te1, X_seq_te2], ignore_index=True)[["Id", "Bound"]]
     FINAL.to_csv("data/final_submission.csv", index=False)
+    print("Done ! check the submission file in the folder data/")
